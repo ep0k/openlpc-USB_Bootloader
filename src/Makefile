@@ -2,12 +2,15 @@ GCC_BIN =
 PROJECT = bootloader
 CMSIS_PATH = ./CDL/CMSISv2p00_LPC17xx
 DRIVER_PATH = ./CDL/LPC17xxLib
-INCLUDE_PATHS = -I. -I./usbstack/include -I$(DRIVER_PATH)/inc -I$(CMSIS_PATH)/inc
+INCLUDE_PATHS = -I. -I./lpcusb/target -I./lpcusb/target/examples \
+				-I$(DRIVER_PATH)/inc -I$(CMSIS_PATH)/inc
 LINKER_SCRIPT = LPC1768.ld
 
 LOCAL_C_SRCS = $(CMSIS_PATH)/src/core_cm3.c $(CMSIS_PATH)/src/system_LPC17xx.c \
 			   $(wildcard $(CMSIS_PATH)/source/*.c) $(wildcard *.c) \
-			   $(wildcard usbstack/src/*.c)
+			   $(wildcard lpcusb/target/*.c) \
+			   lpcusb/target/examples/msc_scsi.c \
+			   lpcusb/target/examples/msc_bot.c
 OBJECTS = $(LOCAL_C_SRCS:.c=.o)
 
 ###############################################################################

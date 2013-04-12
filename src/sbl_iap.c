@@ -11,16 +11,10 @@
 // use without further testing or modification.
 //-----------------------------------------------------------------------------
 
-/***********************************************************************
- * Code Red Technologies - Minor modifications to original NXP AN10866
- * example code for use in RDB1768 secondary USB bootloader based on
- * LPCUSB USB stack.
- * *********************************************************************/
-
-#include "type.h"
 #include "sbl_iap.h"
 #include "sbl_config.h"
 #include "LPC17xx.h"
+#include <stdbool.h>
 
 
 const unsigned sector_start_map[MAX_FLASH_SECTOR] = {SECTOR_0_START,             \
@@ -190,28 +184,17 @@ int user_code_present(void)
     if( result_table[0] == CMD_SUCCESS )
     {
 
-        return (FALSE);
+        return false;
     }
 
-    return (TRUE);
+    return true;
 }
 
 void check_isp_entry_pin(void)
 {
-    unsigned long i,j;
-
-    for(i=0; i < 60 ; i++)
-    {
-          if((LPC_GPIO2->FIOPIN & (BOOTLOADER_ENTRY_GPIO_PORT
-                  << BOOTLOADER_ENTRY_GPIO_PIN)) == 0)
-        {
-            break;
-        }
-        for(j=0;j< (1<<15);j++);
-    }
-    if( i == 60)
-    {
-        execute_user_code();
+    if((LPC_GPIO2->FIOPIN & (BOOTLOADER_ENTRY_GPIO_PORT
+            << BOOTLOADER_ENTRY_GPIO_PIN)) != 0) {
+          execute_user_code();
     }
 }
 

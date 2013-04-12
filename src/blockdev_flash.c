@@ -30,14 +30,14 @@
 
 #include "sbl_config.h"
 #include "sbl_iap.h"
-#include "lpcusb_type.h"
 #include "disk.h"
 
+#include <stdint.h>
 #include <string.h>
 
 extern BOOL  user_flash_erased; // from main_bootloader.c
 
-int BlockDevGetSize(U32 *pdwDriveSize)
+int BlockDevGetSize(uint32_t *pdwDriveSize)
 {
     *pdwDriveSize = (512 * 1024)- sector_start_map[USER_START_SECTOR];
 
@@ -46,9 +46,9 @@ int BlockDevGetSize(U32 *pdwDriveSize)
 }
 
 /*
-int BlockDevWrite(U32 dwAddress, U8 * pbBuf)
+int BlockDevWrite(uint32_t dwAddress, U8 * pbBuf)
 {
-    static U32 lba = 0;
+    static uint32_t lba = 0;
 
     if (lba < 1) {
         // Can't write boot sector
@@ -69,17 +69,17 @@ int BlockDevWrite(U32 dwAddress, U8 * pbBuf)
 }*/
 
 
-int BlockDevWrite(U32 dwAddress, U8 * pbBuf)
+int BlockDevWrite(uint32_t dwAddress, U8 * pbBuf)
 {
 
-    BYTE * firmware;
-    firmware = (BYTE *)USER_FLASH_START;
+    uint8_t * firmware;
+    firmware = (uint8_t *)USER_FLASH_START;
 
-    U32 offset;
+    uint32_t offset;
 
-    U32 length =512;
+    uint32_t length =512;
 
-    U32 i;
+    uint32_t i;
 
     offset = 512* dwAddress;
 
@@ -119,16 +119,16 @@ int BlockDevWrite(U32 dwAddress, U8 * pbBuf)
 
 
 
-int BlockDevRead(U32 dwAddress, U8 * pbBuf)
+int BlockDevRead(uint32_t dwAddress, U8 * pbBuf)
 {
-    U32 offset;
+    uint32_t offset;
 
-      DWORD i;
-      BYTE data;
-      BYTE * firmware;
-      firmware = (BYTE *)USER_FLASH_START;
+      uint32_t i;
+      uint8_t data;
+      uint8_t * firmware;
+      firmware = (uint8_t *)USER_FLASH_START;
 
-        U32 length =512;
+        uint32_t length =512;
 
     offset = 512 * dwAddress;
 
@@ -142,11 +142,11 @@ int BlockDevRead(U32 dwAddress, U8 * pbBuf)
           {
             case 19:
 
-              data = (BYTE)(MSC_BlockCount & 0xFF);
+              data = (uint8_t)(MSC_BlockCount & 0xFF);
             break;
           case 20:
 
-              data = (BYTE)((MSC_BlockCount >> 8) & 0xFF);
+              data = (uint8_t)((MSC_BlockCount >> 8) & 0xFF);
             break;
             case 510:
               data = 0x55;

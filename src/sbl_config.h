@@ -17,41 +17,12 @@
  * use without further testing or modification.
  *---------------------------------------------------------------------------*/
 
-/***********************************************************************
- * Code Red Technologies - Minor modifications to original code for use
- * in RDB1768 secondary USB bootloader based on LPCUSB USB stack.
- * *********************************************************************/
-
 #ifndef  _SBL_CONFIG_H
 #define  _SBL_CONFIG_H
 
-//*** <<< Use Configuration Wizard in Context Menu >>> ***
-
-/*
-// <h> Flash Configuration
-//   <o0> User Start Sector <0-29>
-//   <o1> Device Type
-//              <7=>  LPC17x1 - 8 KB
-//            <15=> LPC17x2 - 64 KB
-//            <17=> LPC17x4 - 128 KB
-//            <21=> LPC17x5/6 - 256 KB
-//            <29=> LPC17x8 - 512 KB
-//   <o2> Code Read Protection
-//        <0x11223344=> NO CRP <0x12345678=> CRP1 <0x87654321=> CRP2 <0x43218765=> CRP3
-// </h>
-*/
-
-/*
- * CodeRed - changed start sector from bank 2 to bank 16 - ie 64k into flash.
- */
 #define USER_START_SECTOR 16
 #define MAX_USER_SECTOR 29
 
-
-/*
- * CodeRed - change FLASH_BUF_SIZE from 256 to 512 to match buffer
- * size used by SCSI layer of LPCUSB
- */
 #define FLASH_BUF_SIZE 512
 #define USER_FLASH_START (sector_start_map[USER_START_SECTOR])
 #define USER_FLASH_END     (sector_end_map[MAX_USER_SECTOR])

@@ -31,8 +31,6 @@
 #ifndef  _BLOCKDEV_FLASH_H
 #define  _BLOCKDEV_FLASH_H
 
-#include "lpcusb_type.h"
-
 int BlockDevGetSize(U32 *pdwDriveSize);
 int BlockDevWrite(U32 dwAddress, U8 * pbBuf);
 int BlockDevRead(U32 dwAddress, U8 * pbBuf);

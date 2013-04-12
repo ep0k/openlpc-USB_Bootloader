@@ -1,5 +1,5 @@
 /*
-    LPCUSB, an USB device driver for LPC microcontrollers    
+    LPCUSB, an USB device driver for LPC microcontrollers
     Copyright (C) 2006 Bertrik Sikken (bertrik@sikken.nl)
 
     Redistribution and use in source and binary forms, with or without
@@ -16,7 +16,7 @@
     THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
     IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
     OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-    IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, 
+    IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
     NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
     DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
@@ -25,30 +25,13 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*********************************************************************
- * Code Red Technologies - modification of LPCUSB mass storage example
- * to provide a flash-based USB secondary bootloader for RDB1768
- * development board fitted with NXP LPC1768 MCU.
- *********************************************************************/
+#include "debug.h"
 
-#include <stdint.h>
+#include "console.h"
 #include "usbapi.h"
-#include "usbdebug.h"
-#include "msc_bot.h"
-#include "disk.h"
 
-/*
- * The LPCUSB stack can be configured to print debug messages - for
- * which the Code Red port uses semihosted printf's. However doing
- * this is not compatible with the use of the bootloader. Thus we
- * check whether the symbol controlling the use of debug messages
- * in the LPCUSB file usbdebug.h is defined. If it is, then LPCUSB
- * is configured to use semihosted printf's, and hence we give
- * an error here.
- */
-#if defined (DEBUG_MESSAGES)
-#error "Please build RDB1768cmsis_usbstack without debug messages."
-#endif
+#include "msc_bot.h"
+#include "blockdev.h"
 
 #define BAUD_RATE    115200
 
@@ -61,9 +44,9 @@ static U8 abClassReqData[4];
 
 static const U8 abDescriptors[] = {
 
-// device descriptor    
+// device descriptor
     0x12,
-    DESC_DEVICE,            
+    DESC_DEVICE,
     LE_WORD(0x0200),        // bcdUSB
     0x00,                    // bDeviceClass
     0x00,                    // bDeviceSubClass
@@ -117,14 +100,17 @@ static const U8 abDescriptors[] = {
     DESC_STRING,
     LE_WORD(0x0409),
 
-    0x10,
+    0x0E,
     DESC_STRING,
-    'D', 0, 'e', 0, 'v', 0, 'B', 0, 'o', 0, 'a', 0,'r',0,'d','0',
+    'L', 0, 'P', 0, 'C', 0, 'U', 0, 'S', 0, 'B', 0,
 
-    0x28,
+    0x12,
     DESC_STRING,
-    'L', 0, 'P', 0, 'C', 0, '1', 0, '7', 0, '5', 0, '9', 0, ' ', 0,'B',0,'o',0,'o',0,'t',0,'l',0,'o',0,'a',0,'d',0,'e',0,'r',0,
+    'P', 0, 'r', 0, 'o', 0, 'd', 0, 'u', 0, 'c', 0, 't', 0, 'X', 0,
 
+    0x1A,
+    DESC_STRING,
+    'D', 0, 'E', 0, 'A', 0, 'D', 0, 'C', 0, '0', 0, 'D', 0, 'E', 0, 'C', 0, 'A', 0, 'F', 0, 'E', 0,
 
 // terminating zero
     0
@@ -135,7 +121,7 @@ static const U8 abDescriptors[] = {
     HandleClassRequest
     ==================
         Handle mass storage class request
-    
+
 **************************************************************************/
 static BOOL HandleClassRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
 {
@@ -163,7 +149,7 @@ static BOOL HandleClassRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
         }
         MSCBotReset();
         break;
-        
+
     default:
         DBG("Unhandled class\n");
         return FALSE;
@@ -172,14 +158,13 @@ static BOOL HandleClassRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
 }
 
 
-void usb_msc_start (void)
+void usb_msc_start(void)
 {
-
     DBG("Initialising USB stack\n");
 
     // initialise stack
     USBInit();
-    
+
     // enable bulk-in interrupts on NAKs
     // these are required to get the BOT protocol going again after a STALL
     USBHwNakIntEnable(INACK_BI);
@@ -189,7 +174,7 @@ void usb_msc_start (void)
 
     // register class request handler
     USBRegisterRequestHandler(REQTYPE_TYPE_CLASS, HandleClassRequest, abClassReqData);
-    
+
     // register endpoint handlers
     USBHwRegisterEPIntHandler(MSC_BULK_IN_EP, MSCBotBulkIn);
     USBHwRegisterEPIntHandler(MSC_BULK_OUT_EP, MSCBotBulkOut);
